@@ -55,7 +55,7 @@ public class ActionRequest {
         LocatorValue = locatorValue;
     }
 
-    public String toJson() {
+    public String toJsonString() {
         try {
             ObjectMapper objMapper = new ObjectMapper();
             return objMapper.writeValueAsString(this);
