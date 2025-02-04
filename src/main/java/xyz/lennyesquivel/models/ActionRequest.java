@@ -11,6 +11,7 @@ public class ActionRequest {
     private String ActionValue;
     private By By;
     private String LocatorValue;
+    private int[] Keys;
 
     public ActionRequest() {
 
@@ -21,6 +22,15 @@ public class ActionRequest {
         this.ActionValue = actionValue;
         this.By = by;
         this.LocatorValue = locatorValue;
+        this.Keys = new int[]{};
+    }
+
+    public ActionRequest(Actions action, String actionValue, By by, String locatorValue, int[] keys) {
+        this.Action = action;
+        this.ActionValue = actionValue;
+        this.By = by;
+        this.LocatorValue = locatorValue;
+        this.Keys = keys;
     }
 
     public void setAction(Actions action) {
@@ -53,6 +63,14 @@ public class ActionRequest {
 
     public void setLocatorValue(String locatorValue) {
         LocatorValue = locatorValue;
+    }
+
+    public int[] getKeys() {
+        return Keys;
+    }
+
+    public void setKeys(int[] keys) {
+        Keys = keys;
     }
 
     public String toJsonString() {

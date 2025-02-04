@@ -17,5 +17,6 @@ public enum Actions {
     TakeScreenshot,
     Wait,
     GetElement,
-    Highlight
+    Highlight,
+    TypeSimultaneously
 }

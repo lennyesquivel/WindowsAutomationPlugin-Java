@@ -8,14 +8,15 @@ import xyz.lennyesquivel.helpers.ConnectionEngine;
 import xyz.lennyesquivel.models.enums.Actions;
 import xyz.lennyesquivel.models.enums.By;
 import xyz.lennyesquivel.models.enums.DriverEndpoints;
+import xyz.lennyesquivel.models.enums.VirtualKeyShort;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WinElement {
 
     public By byLocator;
     public String locatorValue;
-    public Object nativeElement;
     private ConnectionEngine con;
+    private String name;
 
     public WinElement() {
         con = WinAPDriver.getConnection();
@@ -28,7 +29,7 @@ public class WinElement {
             WinElement el = objMapper.readValue(fromJsonString, WinElement.class);
             this.byLocator = el.byLocator;
             this.locatorValue = el.locatorValue;
-            this.nativeElement = el.nativeElement;
+            this.name = el.name;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -59,8 +60,8 @@ public class WinElement {
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
-    public void type() {
-        ActionRequest actionRequest = new ActionRequest(Actions.TypeOnTextBox, null, byLocator, locatorValue);
+    public void type(String value) {
+        ActionRequest actionRequest = new ActionRequest(Actions.TypeOnTextBox, value, byLocator, locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
@@ -69,9 +70,17 @@ public class WinElement {
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
-    // TO-DO
-    public String getText() {
-        return "";
+    public void clear() {
+        int[] keys = new int[]{VirtualKeyShort.CONTROL, VirtualKeyShort.KEY_A};
+        ActionRequest actionRequest = new ActionRequest(Actions.TypeSimultaneously, null, byLocator, locatorValue, keys);
+        con.post(DriverEndpoints.Action, actionRequest.toJsonString());
+        int[] bckKey = new int[]{VirtualKeyShort.BACK};
+        ActionRequest actionRequest2 = new ActionRequest(Actions.TypeSimultaneously, null, byLocator, locatorValue, bckKey);
+        con.post(DriverEndpoints.Action, actionRequest2.toJsonString());
+    }
+
+    public String getName() {
+        return name;
     }
 
 }

@@ -1,5 +1,6 @@
 package xyz.lennyesquivel;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import xyz.lennyesquivel.models.WinElement;
 import xyz.lennyesquivel.models.enums.By;
@@ -20,7 +21,8 @@ public class AppTest extends TestCase {
             WinElement equalsBtn = driver.findElement(By.AutomationId, "equalButton");
             equalsBtn.click();
             WinElement result = driver.findElement(By.AutomationId, "CalculatorResults");
-            System.out.println("Result is: " + result.getText());
+            System.out.println("Result is: " + result.getName());
+            Assert.assertTrue(result.getName().contains("25"));
             driver.quit();
         } catch (Exception e) {
             if (driver != null)
