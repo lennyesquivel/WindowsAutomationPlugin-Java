@@ -11,23 +11,23 @@ public class DriverManager {
     private Process driverProcess;
     private ConnectionEngine con;
 
-    public DriverManager(ConnectionEngine connectionEngine) throws IOException, InterruptedException {
+    public DriverManager(ConnectionEngine connectionEngine, boolean silent) throws IOException, InterruptedException {
         this.con = connectionEngine;
         if (!checkReadyStatus(con, 5)) {
             if (!driverExists(defaultDriverPath)) {
                 fetchDriverAndSetup();
             }
-            startDriverProcess(defaultDriverPath);
+            startDriverProcess(defaultDriverPath, silent);
         }
     }
 
-    public DriverManager(ConnectionEngine connectionEngine, String driverPath) throws Exception {
+    public DriverManager(ConnectionEngine connectionEngine, String driverPath, boolean silent) throws Exception {
         this.con = connectionEngine;
         if (!checkReadyStatus(con, 5)) {
             if (!driverExists(driverPath)) {
                 throw new Exception("Driver does not exist. Path:" + driverPath);
             }
-            startDriverProcess(driverPath);
+            startDriverProcess(driverPath, silent);
         }
     }
 
@@ -48,8 +48,9 @@ public class DriverManager {
 
     }
 
-    private void startDriverProcess(String driverPath) throws IOException, InterruptedException {
-        driverProcess = Runtime.getRuntime().exec("cmd /c start " + driverPath);
+    private void startDriverProcess(String driverPath, boolean silent) throws IOException, InterruptedException {
+        String command = silent ? driverPath : "cmd /c start " + driverPath;
+        driverProcess = Runtime.getRuntime().exec(command);
         driverProcess.waitFor();
     }
 
@@ -82,6 +83,11 @@ public class DriverManager {
             } catch (Exception ignored) { }
         }
         return ready;
+    }
+
+    public String getDriverLogsAsString() {
+        // TO-DO
+        return "";
     }
 
 }

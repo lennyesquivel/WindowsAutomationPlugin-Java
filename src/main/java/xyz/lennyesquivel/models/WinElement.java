@@ -1,6 +1,6 @@
 package xyz.lennyesquivel.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import xyz.lennyesquivel.WinAPDriver;
@@ -10,13 +10,15 @@ import xyz.lennyesquivel.models.enums.By;
 import xyz.lennyesquivel.models.enums.DriverEndpoints;
 import xyz.lennyesquivel.models.enums.VirtualKeyShort;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WinElement {
 
     public By byLocator;
     public String locatorValue;
     private ConnectionEngine con;
     private String name;
+    private int positionX;
+    private int positionY;
 
     public WinElement() {
         con = WinAPDriver.getConnection();
@@ -30,6 +32,8 @@ public class WinElement {
             this.byLocator = el.byLocator;
             this.locatorValue = el.locatorValue;
             this.name = el.name;
+            this.positionX = el.positionX;
+            this.positionY = el.positionY;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -41,22 +45,26 @@ public class WinElement {
      * @author Lenny Esquivel
      */
     public void click() {
-        ActionRequest actionRequest = new ActionRequest(Actions.ClickOnElement, null, byLocator, locatorValue);
+        ActionRequest actionRequest = new ActionRequest(Actions.ClickOnElement, null,
+                byLocator, locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void doubleClick() {
-        ActionRequest actionRequest = new ActionRequest(Actions.DoubleClickOnElement, null, byLocator, locatorValue);
+        ActionRequest actionRequest = new ActionRequest(Actions.DoubleClickOnElement, null,
+                byLocator, locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void rightClick() {
-        ActionRequest actionRequest = new ActionRequest(Actions.RightClickOnElement, null, byLocator, locatorValue);
+        ActionRequest actionRequest = new ActionRequest(Actions.RightClickOnElement, null,
+                byLocator, locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void rightDoubleClick() {
-        ActionRequest actionRequest = new ActionRequest(Actions.RightDoubleClickOnElement, null, byLocator, locatorValue);
+        ActionRequest actionRequest = new ActionRequest(Actions.RightDoubleClickOnElement, null,
+                byLocator, locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
@@ -72,15 +80,21 @@ public class WinElement {
 
     public void clear() {
         int[] keys = new int[]{VirtualKeyShort.CONTROL, VirtualKeyShort.KEY_A};
-        ActionRequest actionRequest = new ActionRequest(Actions.TypeSimultaneously, null, byLocator, locatorValue, keys);
+        ActionRequest actionRequest = new ActionRequest(Actions.TypeSimultaneously, null, byLocator,
+                locatorValue, keys);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
         int[] bckKey = new int[]{VirtualKeyShort.BACK};
-        ActionRequest actionRequest2 = new ActionRequest(Actions.TypeSimultaneously, null, byLocator, locatorValue, bckKey);
+        ActionRequest actionRequest2 = new ActionRequest(Actions.TypeSimultaneously, null, byLocator,
+                locatorValue, bckKey);
         con.post(DriverEndpoints.Action, actionRequest2.toJsonString());
     }
 
     public String getName() {
         return name;
+    }
+
+    public int[][] getCoordinates() {
+        return new int[][] {{positionX}, {positionY}};
     }
 
 }

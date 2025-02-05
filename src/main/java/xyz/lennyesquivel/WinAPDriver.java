@@ -17,57 +17,69 @@ public class WinAPDriver {
     private DriverManager manager;
     private static ConnectionEngine con;
 
+    public WinAPDriver() throws IOException, InterruptedException {
+        con = new ConnectionEngine();
+        manager = new DriverManager(con, false);
+        manager.checkReadyStatus(con);
+    }
+
     /**
      * TO-DO
      * Change to driver builder so we can set options before starting the driver process
      * @throws IOException
      * @throws InterruptedException
      */
-    public WinAPDriver() throws IOException, InterruptedException {
+    public WinAPDriver(boolean silent) throws IOException, InterruptedException {
         con = new ConnectionEngine();
-        manager = new DriverManager(con);
+        manager = new DriverManager(con, silent);
         manager.checkReadyStatus(con);
     }
 
-    public WinAPDriver(String driverPath) throws Exception {
+    public WinAPDriver(String driverPath, boolean silent) throws Exception {
         con = new ConnectionEngine();
-        manager = new DriverManager(con, driverPath);
+        manager = new DriverManager(con, driverPath, silent);
         manager.checkReadyStatus(con);
     }
 
-    public WinAPDriver(String driverPath, String url) throws Exception {
+    public WinAPDriver(String driverPath, String url, boolean silent) throws Exception {
         con = new ConnectionEngine(url);
-        manager = new DriverManager(con, driverPath);
+        manager = new DriverManager(con, driverPath, silent);
         manager.checkReadyStatus(con);
     }
 
     public void launch(String appPath) {
-        ActionRequest actionRequest = new ActionRequest(Actions.Launch, appPath, By.AutomationId, null);
+        ActionRequest actionRequest = new ActionRequest(Actions.Launch, appPath,
+                By.AutomationId, null);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void launchStoreApp(String AUMID) {
-        ActionRequest actionRequest = new ActionRequest(Actions.LaunchStoreApp, AUMID, By.AutomationId, null);
+        ActionRequest actionRequest = new ActionRequest(Actions.LaunchStoreApp, AUMID,
+                By.AutomationId, null);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void attachToProgram(String path) {
-        ActionRequest actionRequest = new ActionRequest(Actions.AttachToProgram, path, By.AutomationId, null);
+        ActionRequest actionRequest = new ActionRequest(Actions.AttachToProgram, path,
+                By.AutomationId, null);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void click() {
-        ActionRequest actionRequest = new ActionRequest(Actions.Click, null, By.AutomationId, null);
+        ActionRequest actionRequest = new ActionRequest(Actions.Click, null,
+                By.AutomationId, null);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void doubleClick() {
-        ActionRequest actionRequest = new ActionRequest(Actions.DoubleClick, null, By.AutomationId, null);
+        ActionRequest actionRequest = new ActionRequest(Actions.DoubleClick, null,
+                By.AutomationId, null);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void rightClick() {
-        ActionRequest actionRequest = new ActionRequest(Actions.RightClick, null, By.AutomationId, null);
+        ActionRequest actionRequest = new ActionRequest(Actions.RightClick, null,
+                By.AutomationId, null);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
@@ -77,22 +89,26 @@ public class WinAPDriver {
     }
 
     public void typeOnTextBox(String value, WinElement element) {
-        ActionRequest actionRequest = new ActionRequest(Actions.TypeOnTextBox, value, element.byLocator, element.locatorValue);
+        ActionRequest actionRequest = new ActionRequest(Actions.TypeOnTextBox, value, element.byLocator,
+                element.locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void close() {
-        ActionRequest actionRequest = new ActionRequest(Actions.Close, null, By.AutomationId, null);
+        ActionRequest actionRequest = new ActionRequest(Actions.Close, null,
+                By.AutomationId, null);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void takeScreenshot() {
-        ActionRequest actionRequest = new ActionRequest(Actions.TakeScreenshot, null, By.AutomationId, null);
+        ActionRequest actionRequest = new ActionRequest(Actions.TakeScreenshot, null,
+                By.AutomationId, null);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
     public void driverWait(int seconds) {
-        ActionRequest actionRequest = new ActionRequest(Actions.Wait, "" + seconds, By.AutomationId, null);
+        ActionRequest actionRequest = new ActionRequest(Actions.Wait, "" + seconds,
+                By.AutomationId, null);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
@@ -105,7 +121,14 @@ public class WinAPDriver {
     }
 
     public void highlightElement(WinElement element) {
-        ActionRequest actionRequest = new ActionRequest(Actions.Highlight, null, element.byLocator, element.locatorValue);
+        ActionRequest actionRequest = new ActionRequest(Actions.Highlight, null,
+                element.byLocator, element.locatorValue);
+        con.post(DriverEndpoints.Action, actionRequest.toJsonString());
+    }
+
+    public void moveMouseToPosition(int X, int Y) {
+        ActionRequest actionRequest = new ActionRequest(Actions.MoveMouseToPosition,
+                String.format("(%s,%s)", X, Y), null, null);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 

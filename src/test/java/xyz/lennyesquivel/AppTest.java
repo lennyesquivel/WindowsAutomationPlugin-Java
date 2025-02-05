@@ -11,8 +11,9 @@ public class AppTest extends TestCase {
         WinAPDriver driver = null;
         try {
             //driver = new WinAPDriver("C:\\WinAPDriver\\publish\\WindowsAutomationPlugin.exe", "http://localhost:5224");
-            driver = new WinAPDriver("C:\\WinAPDriver\\publish\\WindowsAutomationPlugin.exe");
+            driver = new WinAPDriver("C:\\WinAPDriver\\publish\\WindowsAutomationPlugin.exe", false);
             driver.launchStoreApp("Microsoft.WindowsCalculator_8wekyb3d8bbwe!App");
+            Thread.sleep(1000);
             WinElement btn5 = driver.findElement(By.AutomationId, "num5Button");
             btn5.click();
             WinElement multBtn = driver.findElement(By.AutomationId, "multiplyButton");

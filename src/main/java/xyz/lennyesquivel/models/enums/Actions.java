@@ -18,5 +18,6 @@ public enum Actions {
     Wait,
     GetElement,
     Highlight,
-    TypeSimultaneously
+    TypeSimultaneously,
+    MoveMouseToPosition
 }
