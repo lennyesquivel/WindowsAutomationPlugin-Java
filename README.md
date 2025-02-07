@@ -7,10 +7,10 @@ The WAP java project has an integrated driver manager that checks for an existin
 For manual downloads and other versions, visit our [Releases](https://github.com/lennyesquivel/WindowsAutomationPlugin-WindowsDriver/releases) page on GitHub.
 ## Usage
 ### Starting the server
-There are several ways to start the server.
-- Launching the server executable file
+There are 2 ways to start the server.
+1. Launching the server executable file
 	- The client will attempt to connect to connect to the localhost port 5000 so if the driver is already running it'll ping the server to see the status
-- Letting the client to start the driver process
+2. Letting the client to start the driver process
 	- You can specify the path to the driver executable file as a parameter for the WinAPDriver constructor.
 	- There are several constructors that receive the URL of the driver as another parameter for remote connections (this functionality hasn't been tested yet but technically should work).
 
@@ -52,19 +52,19 @@ driver.attachToProgram(appPath);
 ```
 
 ### Pointer/mouse actions
-Straight actions with the pointer/mouse can be done through the driver class wherever the pointer is located at.
+Straight actions with the pointer/mouse can be done through the driver class wherever the pointer is currently located.
 
 Examples:
 ```
 driver.click();
 driver.doubleClick();
 driver.rightClick();
-driver.moveMouseToPosition();
+driver.moveMouseToPosition(int X, int Y);
 ```
 
 ### Keyboard actions
 ```
-driver.type();
+driver.type(String text);
 // For pressing specific keys use typeSimultaneously
 driver.typeSimultaneously(VirtualKeyShort[] keys);
 ```
@@ -75,13 +75,13 @@ driver.takeScreenshot();
 // Close will end the running application
 driver.close();
 // Quit will attempt to end the running application and terminate the driver process
-driver.quite();
+driver.quit();
 ```
 
 ### WinElement actions
 To fetch a WinElement object use:
 ```
-driver.findElement();
+driver.findElement(By by, String locatorValue);
 ```
 
 WinElement click actions:
@@ -94,7 +94,7 @@ element.rightDoubleClick();
 
 WinElement type actions:
 ```
-element.type();
+element.type(String text);
 element.clear();
 ```
 
