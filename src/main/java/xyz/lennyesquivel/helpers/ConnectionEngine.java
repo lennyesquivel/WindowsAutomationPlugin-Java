@@ -1,13 +1,15 @@
 package xyz.lennyesquivel.helpers;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.net.URIBuilder;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -15,9 +17,9 @@ import java.util.Map;
 
 public class ConnectionEngine {
 
-    private String defaultUrl = "http://localhost:5000";
-    private String urlInUse = "";
-    private final HttpClient client = HttpClients.createDefault();
+    private final String defaultUrl = "http://localhost:5000";
+    private final String urlInUse;
+    private final CloseableHttpClient client = HttpClients.createDefault();
 
     public ConnectionEngine() {
         urlInUse = defaultUrl;
@@ -33,7 +35,7 @@ public class ConnectionEngine {
             request.setHeader("Accept", "application/json");
             request.setHeader("Content-type", "application/json");
             request.setEntity(new StringEntity(body));
-            HttpResponse response = client.execute(request);
+            CloseableHttpResponse response = client.execute(request);
             return EntityUtils.toString(response.getEntity());
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -44,13 +46,14 @@ public class ConnectionEngine {
         try {
             HttpGet request = new HttpGet(urlInUse + endpoint);
             request.setHeader("Accept", "application/json");
-            HttpResponse response = client.execute(request);
+            // TO-DO Update deprecated use of execute
+            CloseableHttpResponse response = client.execute(request);
             if (response.getEntity() != null) {
                 return EntityUtils.toString(response.getEntity());
             } else {
                 return null;
             }
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -58,19 +61,19 @@ public class ConnectionEngine {
     public String get(String endpoint, Map<String, String> parameters) {
         try {
             HttpGet request = new HttpGet(urlInUse + endpoint);
-            URIBuilder uriBuilder = new URIBuilder(request.getURI());
+            URIBuilder uriBuilder = new URIBuilder(request.getUri());
             for (String key : parameters.keySet()) {
                 uriBuilder.addParameter(key, parameters.get(key));
             }
-            request.setURI(uriBuilder.build());
+            request.setUri(uriBuilder.build());
             request.setHeader("Accept", "application/json");
-            HttpResponse response = client.execute(request);
+            CloseableHttpResponse response = client.execute(request);
             if (response.getEntity() != null) {
                 return EntityUtils.toString(response.getEntity());
             } else {
                 return null;
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | ParseException e) {
             throw new RuntimeException(e);
         }
     }
