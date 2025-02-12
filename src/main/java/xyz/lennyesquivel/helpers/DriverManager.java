@@ -4,31 +4,50 @@ import xyz.lennyesquivel.models.enums.DriverEndpoints;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.UUID;
 
 public class DriverManager {
 
-    private String defaultDriverPath = "";
+    private String driverPathInUse = "";
     private Process driverProcess;
-    private ConnectionEngine con;
+    private final ConnectionEngine con;
+    private final String sessionId;
+    // TO-DO: Check this later since we might need a token for the request
+    private final String driverReleaseUrl = "https://github.com/lennyesquivel/WindowsAutomationPlugin-WindowsDriver/releases/latest";
+
+    public DriverManager(ConnectionEngine connectionEngine) {
+        this.sessionId = UUID.randomUUID().toString();
+        this.con = connectionEngine;
+        if (!checkReadyStatus(5)) {
+            throw new RuntimeException("Driver session could not be reached.");
+        }
+        registerClientSession();
+    }
 
     public DriverManager(ConnectionEngine connectionEngine, boolean silent) throws IOException, InterruptedException {
+        this.sessionId = UUID.randomUUID().toString();
         this.con = connectionEngine;
-        if (!checkReadyStatus(con, 5)) {
+        if (!checkReadyStatus(5)) {
+            String defaultDriverPath = "";
             if (!driverExists(defaultDriverPath)) {
                 fetchDriverAndSetup();
             }
-            startDriverProcess(defaultDriverPath, silent);
+            startDriverProcess(driverPathInUse, silent);
         }
+        registerClientSession();
     }
 
     public DriverManager(ConnectionEngine connectionEngine, String driverPath, boolean silent) throws Exception {
+        this.sessionId = UUID.randomUUID().toString();
         this.con = connectionEngine;
-        if (!checkReadyStatus(con, 5)) {
+        if (!checkReadyStatus(5)) {
             if (!driverExists(driverPath)) {
                 throw new Exception("Driver does not exist. Path:" + driverPath);
             }
             startDriverProcess(driverPath, silent);
         }
+        registerClientSession();
     }
 
     public boolean isDriverProcessRunning() {
@@ -36,8 +55,24 @@ public class DriverManager {
     }
 
     private boolean driverExists(String driverPath) {
+        boolean exists = false;
         File driverFile = new File(driverPath);
-        return driverFile.exists();
+        exists = driverFile.exists();
+        if (exists) {
+            driverPathInUse = driverPath;
+        }
+        String envVarName = "WAP_PATH";
+        String envVarValue = System.getenv(envVarName);
+        if (envVarValue != null && !envVarValue.isEmpty()) {
+            String driverExeName = "WindowsAutomationPlugin.exe";
+            File driverFileEnv = new File(envVarValue + "\\" + driverExeName);
+            boolean fromEnvExists = driverFileEnv.exists();
+            if (fromEnvExists) {
+                driverPathInUse = envVarValue + "\\" + driverExeName;
+            }
+            exists = exists || driverFileEnv.exists();
+        }
+        return exists;
     }
 
     /**
@@ -55,21 +90,10 @@ public class DriverManager {
     }
 
     public void stopDriverProcess() {
-        driverProcess.destroy();
+        driverProcess.destroyForcibly();
     }
 
-    public void checkReadyStatus(ConnectionEngine connectionEngine) {
-        boolean ready = false;
-        while(!ready) {
-            try {
-                Thread.sleep(100);
-                ready = connectionEngine.get(DriverEndpoints.Status).contains("Ready");
-
-            } catch (Exception ignored) { }
-        }
-    }
-
-    public boolean checkReadyStatus(ConnectionEngine connectionEngine, int retries) {
+    public boolean checkReadyStatus(int retries) {
         boolean ready = false;
         int retried = 0;
         while(!ready) {
@@ -77,17 +101,23 @@ public class DriverManager {
                 retried++;
                 if (retried > retries)
                     break;
-                System.out.printf("Checking if driver is up %s times.\n", retried);
-                Thread.sleep(100);
-                ready = connectionEngine.get(DriverEndpoints.Status).contains("Ready");
+                Thread.sleep(200);
+                ready = this.con.get(DriverEndpoints.Status).contains("Ready");
             } catch (Exception ignored) { }
         }
         return ready;
     }
 
-    public String getDriverLogsAsString() {
-        // TO-DO
-        return "";
+    private void registerClientSession() {
+        if (checkReadyStatus(10)) {
+            this.con.post(DriverEndpoints.Status, this.sessionId);
+        } else {
+            throw new RuntimeException("Driver was unreachable");
+        }
+    }
+
+    public OutputStream getDriverLogs() {
+        return driverProcess.getOutputStream();
     }
 
 }

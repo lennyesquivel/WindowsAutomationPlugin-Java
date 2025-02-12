@@ -12,20 +12,26 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 
 public class ConnectionEngine {
 
-    private final String defaultUrl = "http://localhost:5000";
-    private final String urlInUse;
+    private final URL defaultUrl = new URL("http://localhost:5000");
+    private final URL urlInUse;
     private final CloseableHttpClient client = HttpClients.createDefault();
 
-    public ConnectionEngine() {
+    public ConnectionEngine() throws MalformedURLException {
         urlInUse = defaultUrl;
     }
 
-    public ConnectionEngine(String url) {
+    public ConnectionEngine(String url) throws MalformedURLException {
+        urlInUse = new URL(url);
+    }
+
+    public ConnectionEngine(URL url) throws MalformedURLException {
         urlInUse = url;
     }
 
