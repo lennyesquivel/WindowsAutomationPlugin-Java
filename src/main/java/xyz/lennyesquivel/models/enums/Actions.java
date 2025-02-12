@@ -19,5 +19,9 @@ public enum Actions {
     GetElement,
     Highlight,
     TypeSimultaneously,
-    MoveMouseToPosition
+    MoveMouseToPosition,
+    KeyDown,
+    KeyUp,
+    ClickAndDragToCoordinates,
+    ClickAndDragToElement
 }
