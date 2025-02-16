@@ -80,6 +80,7 @@ public class DriverManager {
     private void fetchDriverAndSetup() {
         File cacheDir = new File(userDirectory + "\\.cache");
         File driverDir = new File(userDirectory + "\\.cache\\winapdriver");
+        File driverFile = new File(userDirectory + "\\.cache\\winapdriver\\" + driverName);
         if (!cacheDir.exists()) {
             System.out.println("Driver path doesn't exist, creating directory...");
             assert cacheDir.mkdir();
@@ -87,6 +88,9 @@ public class DriverManager {
         } else if (!driverDir.exists()) {
             System.out.println("Driver path doesn't exist, creating directory...");
             assert driverDir.mkdir();
+        } else if (driverFile.exists()) {
+            driverPathInUse = driverFile.getAbsolutePath();
+            return;
         }
         String driverReleaseUrl = "https://github.com/lennyesquivel/WindowsAutomationPlugin-WindowsDriver/releases/latest/download/" + driverName;
         System.out.println("Fetching latest driver from: " + driverReleaseUrl);

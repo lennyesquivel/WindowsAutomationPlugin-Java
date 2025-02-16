@@ -21,18 +21,14 @@ public class WinAPDriver {
     private static ConnectionEngine con;
     private final DriverOptions options;
 
-    public WinAPDriver() throws IOException, InterruptedException {
+    public WinAPDriver() throws IOException {
         con = new ConnectionEngine();
         manager = new DriverManager(con, false);
         manager.checkReadyStatus(1);
         options = new DriverOptions();
     }
 
-    /**
-     * TO-DO
-     * Change to driver builder so we can set options before starting the driver process
-     */
-    public WinAPDriver(boolean silent) throws IOException, InterruptedException {
+    public WinAPDriver(boolean silent) throws IOException {
         con = new ConnectionEngine();
         manager = new DriverManager(con, silent);
         manager.checkReadyStatus(1);
@@ -53,8 +49,8 @@ public class WinAPDriver {
         options = new DriverOptions();
     }
 
-    public WinAPDriver implicitlyWait(int milis) {
-        this.options.setImplicitWaitTime(milis);
+    public WinAPDriver implicitlyWait(int millis) {
+        this.options.setImplicitWaitTime(millis);
         return this;
     }
 
