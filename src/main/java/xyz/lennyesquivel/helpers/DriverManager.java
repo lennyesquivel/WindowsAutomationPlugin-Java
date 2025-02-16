@@ -112,7 +112,7 @@ public class DriverManager {
     }
 
     private void startDriverProcess(String driverPath, boolean silent) throws IOException {
-        String command = silent ? driverPath : "cmd /c start " + driverPath;
+        String command = silent ? "start " + driverPath : "cmd /c start " + driverPath;
         driverProcess = Runtime.getRuntime().exec(command);
     }
 
