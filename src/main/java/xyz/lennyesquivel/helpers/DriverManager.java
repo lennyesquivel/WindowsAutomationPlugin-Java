@@ -2,9 +2,12 @@ package xyz.lennyesquivel.helpers;
 
 import xyz.lennyesquivel.models.enums.DriverEndpoints;
 
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.UUID;
 
 public class DriverManager {
@@ -13,8 +16,8 @@ public class DriverManager {
     private Process driverProcess;
     private final ConnectionEngine con;
     private final String sessionId;
-    // TO-DO: Check this later since we might need a token for the request
-    private final String driverReleaseUrl = "https://github.com/lennyesquivel/WindowsAutomationPlugin-WindowsDriver/releases/latest";
+    private final String driverName = "WindowsAutomationPlugin.exe";
+    private final String userDirectory = System.getProperty("user.home");
 
     public DriverManager(ConnectionEngine connectionEngine) {
         this.sessionId = UUID.randomUUID().toString();
@@ -25,7 +28,7 @@ public class DriverManager {
         registerClientSession();
     }
 
-    public DriverManager(ConnectionEngine connectionEngine, boolean silent) throws IOException, InterruptedException {
+    public DriverManager(ConnectionEngine connectionEngine, boolean silent) throws IOException {
         this.sessionId = UUID.randomUUID().toString();
         this.con = connectionEngine;
         if (!checkReadyStatus(5)) {
@@ -55,9 +58,8 @@ public class DriverManager {
     }
 
     private boolean driverExists(String driverPath) {
-        boolean exists = false;
         File driverFile = new File(driverPath);
-        exists = driverFile.exists();
+        boolean exists = driverFile.exists();
         if (exists) {
             driverPathInUse = driverPath;
         }
@@ -75,22 +77,48 @@ public class DriverManager {
         return exists;
     }
 
-    /**
-     * TO-DO
-     * Add check env variable and path for file, if none present then download driver and extract/copy to cache path
-     */
     private void fetchDriverAndSetup() {
-
+        File cacheDir = new File(userDirectory + "\\.cache");
+        File driverDir = new File(userDirectory + "\\.cache\\winapdriver");
+        if (!cacheDir.exists()) {
+            System.out.println("Driver path doesn't exist, creating directory...");
+            assert cacheDir.mkdir();
+            assert driverDir.mkdir();
+        } else if (!driverDir.exists()) {
+            System.out.println("Driver path doesn't exist, creating directory...");
+            assert driverDir.mkdir();
+        }
+        String driverReleaseUrl = "https://github.com/lennyesquivel/WindowsAutomationPlugin-WindowsDriver/releases/latest/download/" + driverName;
+        System.out.println("Fetching latest driver from: " + driverReleaseUrl);
+        try (BufferedInputStream inputStream = new BufferedInputStream(new URL(driverReleaseUrl).openStream())) {
+            String driverPath = driverDir.getAbsolutePath().concat("\\" + driverName);
+            FileOutputStream fileOutputStream = new FileOutputStream(driverPath);
+            byte[] dataBuffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(dataBuffer, 0, 1024)) != -1) {
+                fileOutputStream.write(dataBuffer, 0, bytesRead);
+            }
+            driverPathInUse = driverPath;
+            fileOutputStream.close();
+            inputStream.close();
+            System.out.println("Done.");
+        } catch (IOException e) {
+            throw new RuntimeException("There was an error trying to download the latest driver.\n" + e);
+        }
     }
 
-    private void startDriverProcess(String driverPath, boolean silent) throws IOException, InterruptedException {
+    private void startDriverProcess(String driverPath, boolean silent) throws IOException {
         String command = silent ? driverPath : "cmd /c start " + driverPath;
         driverProcess = Runtime.getRuntime().exec(command);
-        driverProcess.waitFor();
     }
 
     public void stopDriverProcess() {
-        driverProcess.destroyForcibly();
+        driverProcess.destroy();
+        try {
+            driverProcess.waitFor();
+        } catch (Exception ex) {
+            throw new RuntimeException("There was an error while terminating the driver process.\n" + ex.getMessage());
+        }
     }
 
     public boolean checkReadyStatus(int retries) {
@@ -101,7 +129,7 @@ public class DriverManager {
                 retried++;
                 if (retried > retries)
                     break;
-                Thread.sleep(200);
+                Thread.sleep(250);
                 ready = this.con.get(DriverEndpoints.Status).contains("Ready");
             } catch (Exception ignored) { }
         }
@@ -109,7 +137,7 @@ public class DriverManager {
     }
 
     private void registerClientSession() {
-        if (checkReadyStatus(10)) {
+        if (checkReadyStatus(30)) {
             this.con.post(DriverEndpoints.Status, this.sessionId);
         } else {
             throw new RuntimeException("Driver was unreachable");
