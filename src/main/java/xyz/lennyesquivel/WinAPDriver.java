@@ -54,16 +54,6 @@ public class WinAPDriver {
         return this;
     }
 
-    public WinAPDriver withUIA2() {
-        this.options.setUIAVersion(2);
-        return this;
-    }
-
-    public WinAPDriver withUIA3() {
-        this.options.setUIAVersion(3);
-        return this;
-    }
-
     public WinAPDriver build() {
         con.post(DriverEndpoints.Driver, this.options.toJsonString());
         return this;

@@ -5,16 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DriverOptions {
 
-    private int UIAVersion;
     private int ImplicitWaitTime;
-
-    public int getUIAVersion() {
-        return UIAVersion;
-    }
-
-    public void setUIAVersion(int UIAVersion) {
-        this.UIAVersion = UIAVersion;
-    }
 
     public int getImplicitWaitTime() {
         return ImplicitWaitTime;
