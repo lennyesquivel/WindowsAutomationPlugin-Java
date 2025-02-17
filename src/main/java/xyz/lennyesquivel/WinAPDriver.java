@@ -154,6 +154,18 @@ public class WinAPDriver {
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
+    public void clickAndDragToCoordinates(int X, int Y) {
+        ActionRequest actionRequest = new ActionRequest(Actions.ClickAndDragToCoordinates,
+                String.format("(%s,%s)", X, Y), By.AutomationId, null);
+        con.post(DriverEndpoints.Action, actionRequest.toJsonString());
+    }
+
+    public void clickAndDragToElement(WinElement element) {
+        ActionRequest actionRequest = new ActionRequest(Actions.ClickAndDragToElement, null,
+                element.byLocator, element.locatorValue);
+        con.post(DriverEndpoints.Action, actionRequest.toJsonString());
+    }
+
     public void quit() {
         if (manager.isDriverProcessRunning()) {
             manager.stopDriverProcess();
