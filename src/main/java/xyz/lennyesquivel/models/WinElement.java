@@ -16,9 +16,16 @@ public class WinElement {
     public By byLocator;
     public String locatorValue;
     private ConnectionEngine con;
-    private String name;
-    private int positionX;
-    private int positionY;
+    public String name;
+    public int positionX;
+    public int positionY;
+    public double height;
+    public double width;
+    public String className;
+    public String controlType;
+    public boolean isAvailable;
+    public boolean isEnabled;
+    public boolean isOffscreen;
 
     public WinElement() {
         con = WinAPDriver.getConnection();
@@ -34,6 +41,13 @@ public class WinElement {
             this.name = el.name;
             this.positionX = el.positionX;
             this.positionY = el.positionY;
+            this.height = el.height;
+            this.width = el.width;
+            this.className = el.className;
+            this.controlType = el.controlType;
+            this.isAvailable = el.isAvailable;
+            this.isEnabled = el.isEnabled;
+            this.isOffscreen = el.isOffscreen;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

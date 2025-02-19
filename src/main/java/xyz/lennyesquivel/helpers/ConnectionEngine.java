@@ -1,40 +1,53 @@
 package xyz.lennyesquivel.helpers;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
+import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.async.methods.SimpleRequestBuilder;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.core5.http.ContentType;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class ConnectionEngine {
 
-    private String defaultUrl = "http://localhost:5000";
-    private String urlInUse = "";
-    private final HttpClient client = HttpClients.createDefault();
+    private final URL defaultUrl = new URL("http://localhost:5000");
+    private final URL urlInUse;
+    private final CloseableHttpAsyncClient client = HttpAsyncClients.createDefault();
 
-    public ConnectionEngine() {
+    public ConnectionEngine() throws MalformedURLException {
         urlInUse = defaultUrl;
+        client.start();
     }
 
-    public ConnectionEngine(String url) {
+    public ConnectionEngine(String url) throws MalformedURLException {
+        urlInUse = new URL(url);
+        client.start();
+    }
+
+    public ConnectionEngine(URL url) throws MalformedURLException {
         urlInUse = url;
+        client.start();
     }
 
     public String post(String endpoint, String body) {
         try {
-            HttpPost request = new HttpPost(urlInUse + endpoint);
-            request.setHeader("Accept", "application/json");
-            request.setHeader("Content-type", "application/json");
-            request.setEntity(new StringEntity(body));
-            HttpResponse response = client.execute(request);
-            return EntityUtils.toString(response.getEntity());
+            SimpleHttpRequest request = SimpleRequestBuilder.post(urlInUse + endpoint)
+                    .setHeader("Accept", "application/json")
+                    .setHeader("Content-type", "application/json")
+                    .setBody(body, ContentType.APPLICATION_JSON).build();
+            Future<SimpleHttpResponse> future = client.execute(request, null);
+            SimpleHttpResponse response = future.get();
+            if (response.getBody() != null) {
+                return response.getBody().getBodyText();
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -42,35 +55,36 @@ public class ConnectionEngine {
 
     public String get(String endpoint) {
         try {
-            HttpGet request = new HttpGet(urlInUse + endpoint);
-            request.setHeader("Accept", "application/json");
-            HttpResponse response = client.execute(request);
-            if (response.getEntity() != null) {
-                return EntityUtils.toString(response.getEntity());
+            SimpleHttpRequest request = SimpleRequestBuilder.get(urlInUse + endpoint)
+                    .addHeader("Accept", "application/json").build();
+            Future<SimpleHttpResponse> future = client.execute(request, null);
+            SimpleHttpResponse response = future.get();
+            if (response.getBody() != null) {
+                return response.getBody().getBodyText();
             } else {
                 return null;
             }
-        } catch (IOException e) {
+        } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
     public String get(String endpoint, Map<String, String> parameters) {
         try {
-            HttpGet request = new HttpGet(urlInUse + endpoint);
-            URIBuilder uriBuilder = new URIBuilder(request.getURI());
+            SimpleRequestBuilder requestBuilder = SimpleRequestBuilder.get(urlInUse + endpoint)
+                    .addHeader("Accept", "application/json");
             for (String key : parameters.keySet()) {
-                uriBuilder.addParameter(key, parameters.get(key));
+                requestBuilder.addParameter(key, parameters.get(key));
             }
-            request.setURI(uriBuilder.build());
-            request.setHeader("Accept", "application/json");
-            HttpResponse response = client.execute(request);
-            if (response.getEntity() != null) {
-                return EntityUtils.toString(response.getEntity());
+            SimpleHttpRequest request = requestBuilder.build();
+            Future<SimpleHttpResponse> future = client.execute(request, null);
+            SimpleHttpResponse response = future.get();
+            if (response.getBody() != null) {
+                return response.getBody().getBodyText();
             } else {
                 return null;
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

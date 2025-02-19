@@ -1,23 +1,25 @@
 # WindowsAutomationPlugin
-_This is documentation for the WindowsAutomationPlugin client for Java. For Driver documentation please visit the [respective repository](https://github.com/lennyesquivel/WindowsAutomationPlugin-Java/tree/master)_
+This is documentation for the WindowsAutomationPlugin client for Java. For Driver documentation please visit the [respective repository](https://github.com/lennyesquivel/WindowsAutomationPlugin-Java/tree/master).
 ## Download WAP driver
-[TO-DO / Still work in progress]
 The WAP java project has an integrated driver manager that checks for an existing version of the driver in the device, if none found, it will attempt to fetch the driver files from the release page on GitHub.
+Installation path for the automatically downloaded driver is "C:\\Users\\YOUR_USER\\.cache\\winapdriver".
 
 For manual downloads and other versions, visit our [Releases](https://github.com/lennyesquivel/WindowsAutomationPlugin-WindowsDriver/releases) page on GitHub.
+
 ## Usage
 ### Starting the server
 There are 2 ways to start the server.
 1. Launching the server executable file
-	- The client will attempt to connect to connect to the localhost port 5000 so if the driver is already running it'll ping the server to see the status
-2. Letting the client to start the driver process
+	- The client will attempt to connect to the localhost port 5000 so if the driver is already running it'll ping the server to see the status.
+2. Letting the client start the driver process
 	- You can specify the path to the driver executable file as a parameter for the WinAPDriver constructor.
 	- There are several constructors that receive the URL of the driver as another parameter for remote connections (this functionality hasn't been tested yet but technically should work).
+    - Setting an environment variable (WAP_PATH) with the path to the driver's executable file.
 
 Being the default values for:
 - Driver URL: http://localhost:5000
-- Driver executable path: C:/Users/YourUser/.cache/winapdriver/WindowsAutomationPlugin.exe
-The constructors for instancing the WinAPDriver are as follow:
+- Driver executable path: C:/Users/YOUR_USER/.cache/winapdriver/WindowsAutomationPlugin.exe
+The constructors for instancing the WinAPDriver are as follows:
 
 ```
 // Connects to default URL and launches executable in default location
@@ -33,7 +35,11 @@ WinAPDriver(String driverPath, boolean silent);
 WinAPDriver(String url);
 ```
 ### Starting with options
-This functionality is still under development, any requests can be raised as a GitHub issue as per the feature request guidelines bellow.
+#### Implicit Wait
+For setting the amount of milliseconds for implicitly waiting on elements you can use the driver builder.
+```
+driver = new WinAPDriver().implicitlyWait(1000).build();
+```
 
 ### Launching an application
 Windows applications can be launched several ways, depending on the type of application.
@@ -103,6 +109,23 @@ WinElement property methods:
 element.getName();
 element.getCoordinates();
 ```
+
+### WinElement locator types (By)
+```
+By.Value
+By.Text
+By.ProcessId
+By.Name
+By.LocalizedControlType
+By.HelpText
+By.FrameworkType
+By.FrameworkId
+By.ControlType
+By.ClassName
+By.AutomationId
+By.Xpath
+```
+
 ## Scope
 The actions implemented on the Java client are directly related to the actions the driver supports. Currently the driver uses FlaUI to interact with the Windows elements and the scope for this version of the driver is to extend as much functionality from FlaUI to the client as possible. Future versions will aim to remove FlaUI and implement a direct approach similar to what FlaUI does but without a middle man. This will allow us to try to provide more functionality and better performance.
 

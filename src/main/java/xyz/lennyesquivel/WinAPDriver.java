@@ -3,48 +3,60 @@ package xyz.lennyesquivel;
 import xyz.lennyesquivel.helpers.ConnectionEngine;
 import xyz.lennyesquivel.helpers.DriverManager;
 import xyz.lennyesquivel.models.ActionRequest;
+import xyz.lennyesquivel.models.DriverOptions;
 import xyz.lennyesquivel.models.WinElement;
 import xyz.lennyesquivel.models.enums.Actions;
 import xyz.lennyesquivel.models.enums.By;
 import xyz.lennyesquivel.models.enums.DriverEndpoints;
+import xyz.lennyesquivel.models.enums.VirtualKeyShort;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 public class WinAPDriver {
 
-    private DriverManager manager;
+    private final DriverManager manager;
     private static ConnectionEngine con;
+    private final DriverOptions options;
 
-    public WinAPDriver() throws IOException, InterruptedException {
+    public WinAPDriver() throws IOException {
         con = new ConnectionEngine();
         manager = new DriverManager(con, false);
-        manager.checkReadyStatus(con);
+        manager.checkReadyStatus(1);
+        options = new DriverOptions();
     }
 
-    /**
-     * TO-DO
-     * Change to driver builder so we can set options before starting the driver process
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public WinAPDriver(boolean silent) throws IOException, InterruptedException {
+    public WinAPDriver(boolean silent) throws IOException {
         con = new ConnectionEngine();
         manager = new DriverManager(con, silent);
-        manager.checkReadyStatus(con);
+        manager.checkReadyStatus(1);
+        options = new DriverOptions();
     }
 
     public WinAPDriver(String driverPath, boolean silent) throws Exception {
         con = new ConnectionEngine();
         manager = new DriverManager(con, driverPath, silent);
-        manager.checkReadyStatus(con);
+        manager.checkReadyStatus(1);
+        options = new DriverOptions();
     }
 
-    public WinAPDriver(String driverPath, String url, boolean silent) throws Exception {
+    public WinAPDriver(URL url) throws Exception {
         con = new ConnectionEngine(url);
-        manager = new DriverManager(con, driverPath, silent);
-        manager.checkReadyStatus(con);
+        manager = new DriverManager(con);
+        manager.checkReadyStatus(1);
+        options = new DriverOptions();
+    }
+
+    public WinAPDriver implicitlyWait(int millis) {
+        this.options.setImplicitWaitTime(millis);
+        return this;
+    }
+
+    public WinAPDriver build() {
+        con.post(DriverEndpoints.Driver, this.options.toJsonString());
+        return this;
     }
 
     public void launch(String appPath) {
@@ -94,6 +106,16 @@ public class WinAPDriver {
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
+    public void keyDown(VirtualKeyShort key) {
+        ActionRequest actionRequest = new ActionRequest(Actions.KeyDown, key.toString(), null, null);
+        con.post(DriverEndpoints.Action, actionRequest.toJsonString());
+    }
+
+    public void keyUp(VirtualKeyShort key) {
+        ActionRequest actionRequest = new ActionRequest(Actions.KeyUp, key.toString(), null, null);
+        con.post(DriverEndpoints.Action, actionRequest.toJsonString());
+    }
+
     public void close() {
         ActionRequest actionRequest = new ActionRequest(Actions.Close, null,
                 By.AutomationId, null);
@@ -129,6 +151,18 @@ public class WinAPDriver {
     public void moveMouseToPosition(int X, int Y) {
         ActionRequest actionRequest = new ActionRequest(Actions.MoveMouseToPosition,
                 String.format("(%s,%s)", X, Y), null, null);
+        con.post(DriverEndpoints.Action, actionRequest.toJsonString());
+    }
+
+    public void clickAndDragToCoordinates(int X, int Y) {
+        ActionRequest actionRequest = new ActionRequest(Actions.ClickAndDragToCoordinates,
+                String.format("(%s,%s)", X, Y), By.AutomationId, null);
+        con.post(DriverEndpoints.Action, actionRequest.toJsonString());
+    }
+
+    public void clickAndDragToElement(WinElement element) {
+        ActionRequest actionRequest = new ActionRequest(Actions.ClickAndDragToElement, null,
+                element.byLocator, element.locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
