@@ -21,18 +21,14 @@ public class WinAPDriver {
     private static ConnectionEngine con;
     private final DriverOptions options;
 
-    public WinAPDriver() throws IOException, InterruptedException {
+    public WinAPDriver() throws IOException {
         con = new ConnectionEngine();
         manager = new DriverManager(con, false);
         manager.checkReadyStatus(1);
         options = new DriverOptions();
     }
 
-    /**
-     * TO-DO
-     * Change to driver builder so we can set options before starting the driver process
-     */
-    public WinAPDriver(boolean silent) throws IOException, InterruptedException {
+    public WinAPDriver(boolean silent) throws IOException {
         con = new ConnectionEngine();
         manager = new DriverManager(con, silent);
         manager.checkReadyStatus(1);
@@ -53,18 +49,8 @@ public class WinAPDriver {
         options = new DriverOptions();
     }
 
-    public WinAPDriver implicitlyWait(int milis) {
-        this.options.setImplicitWaitTime(milis);
-        return this;
-    }
-
-    public WinAPDriver withUIA2() {
-        this.options.setUIAVersion(2);
-        return this;
-    }
-
-    public WinAPDriver withUIA3() {
-        this.options.setUIAVersion(3);
+    public WinAPDriver implicitlyWait(int millis) {
+        this.options.setImplicitWaitTime(millis);
         return this;
     }
 
@@ -165,6 +151,18 @@ public class WinAPDriver {
     public void moveMouseToPosition(int X, int Y) {
         ActionRequest actionRequest = new ActionRequest(Actions.MoveMouseToPosition,
                 String.format("(%s,%s)", X, Y), null, null);
+        con.post(DriverEndpoints.Action, actionRequest.toJsonString());
+    }
+
+    public void clickAndDragToCoordinates(int X, int Y) {
+        ActionRequest actionRequest = new ActionRequest(Actions.ClickAndDragToCoordinates,
+                String.format("(%s,%s)", X, Y), By.AutomationId, null);
+        con.post(DriverEndpoints.Action, actionRequest.toJsonString());
+    }
+
+    public void clickAndDragToElement(WinElement element) {
+        ActionRequest actionRequest = new ActionRequest(Actions.ClickAndDragToElement, null,
+                element.byLocator, element.locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
