@@ -10,7 +10,6 @@ public class AppTest extends TestCase {
     public void testApp() {
         WinAPDriver driver = null;
         try {
-            //driver = new WinAPDriver("C:\\WinAPDriver\\publish\\WindowsAutomationPlugin.exe", "http://localhost:5224");
             driver = new WinAPDriver(false).implicitlyWait(1000).build();
             driver.launchStoreApp("Microsoft.WindowsCalculator_8wekyb3d8bbwe!App");
             Thread.sleep(1000);
