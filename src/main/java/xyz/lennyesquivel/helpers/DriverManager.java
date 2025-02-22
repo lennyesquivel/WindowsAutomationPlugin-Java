@@ -1,5 +1,6 @@
 package xyz.lennyesquivel.helpers;
 
+import xyz.lennyesquivel.models.ClientSession;
 import xyz.lennyesquivel.models.enums.DriverEndpoints;
 
 import java.io.BufferedInputStream;
@@ -8,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class DriverManager {
@@ -22,6 +25,7 @@ public class DriverManager {
     public DriverManager(ConnectionEngine connectionEngine) {
         this.sessionId = UUID.randomUUID().toString();
         this.con = connectionEngine;
+        this.con.setClientSessionId(this.sessionId);
         if (!checkReadyStatus(5)) {
             throw new RuntimeException("Driver session could not be reached.");
         }
@@ -31,6 +35,7 @@ public class DriverManager {
     public DriverManager(ConnectionEngine connectionEngine, boolean silent) throws IOException {
         this.sessionId = UUID.randomUUID().toString();
         this.con = connectionEngine;
+        this.con.setClientSessionId(this.sessionId);
         if (!checkReadyStatus(5)) {
             String defaultDriverPath = "";
             if (!driverExists(defaultDriverPath)) {
@@ -44,6 +49,7 @@ public class DriverManager {
     public DriverManager(ConnectionEngine connectionEngine, String driverPath, boolean silent) throws Exception {
         this.sessionId = UUID.randomUUID().toString();
         this.con = connectionEngine;
+        this.con.setClientSessionId(this.sessionId);
         if (!checkReadyStatus(5)) {
             if (!driverExists(driverPath)) {
                 throw new Exception("Driver does not exist. Path:" + driverPath);
@@ -54,7 +60,7 @@ public class DriverManager {
     }
 
     public boolean isDriverProcessRunning() {
-        return driverProcess != null && driverProcess.isAlive();
+        return checkReadyStatus(3);
     }
 
     private boolean driverExists(String driverPath) {
@@ -112,16 +118,19 @@ public class DriverManager {
     }
 
     private void startDriverProcess(String driverPath, boolean silent) throws IOException {
-        String command = silent ? "start " + driverPath : "cmd /c start " + driverPath;
-        driverProcess = Runtime.getRuntime().exec(command);
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (silent) {
+            processBuilder.command("start", driverPath);
+        } else {
+            processBuilder.command("cmd.exe", "/c", "start", driverPath);
+        }
+        driverProcess = processBuilder.start();
     }
 
     public void stopDriverProcess() {
-        driverProcess.destroy();
-        try {
-            driverProcess.waitFor();
-        } catch (Exception ex) {
-            throw new RuntimeException("There was an error while terminating the driver process.\n" + ex.getMessage());
+        unRegisterClientSession();
+        if (driverProcess != null) {
+            this.con.delete(DriverEndpoints.DestroyDriver, null);
         }
     }
 
@@ -142,10 +151,16 @@ public class DriverManager {
 
     private void registerClientSession() {
         if (checkReadyStatus(30)) {
-            this.con.post(DriverEndpoints.Status, this.sessionId);
+            this.con.post(DriverEndpoints.ClientSessionId, new ClientSession(this.sessionId).toJsonString());
         } else {
             throw new RuntimeException("Driver was unreachable");
         }
+    }
+
+    private void unRegisterClientSession() {
+        Map<String, String> params = new HashMap<>();
+        params.put("clientSessionId", this.sessionId);
+        this.con.delete(DriverEndpoints.ClientSessionId, params);
     }
 
     public OutputStream getDriverLogs() {
