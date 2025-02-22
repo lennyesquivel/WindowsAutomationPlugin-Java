@@ -4,6 +4,7 @@ public class DriverEndpoints {
     // STATUS
     public static String Status = "/status";
     public static String ClientSessionId = Status + "/clientSessionId";
+    public static String DestroyDriver = Status + "/selfDestruct";
 
     // ACTION
     public static String Action = "/action";

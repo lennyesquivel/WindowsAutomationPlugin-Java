@@ -133,8 +133,27 @@ This is a project done by one person in the span of about two weeks, it is very 
 ## Known Issues
 None for now...
 
+## Roadmap
+Features in progress or planned to be implemented.
+- [x] Actions 
+  - [x] KeyUp
+  - [x] KeyDown
+  - [x] Drag/Drop
+- [x] DriverManager automatic driver download and check
+	- [x] Implement environment variables for driver path
+- [x] Package .NET project executable into one file
+- [x] Implement driver options to build driver with
+	- [x] Implicit wait time
+	- [ ] UIA version (deemed as not necessary at the moment)
+- [x] Add By locators to readme
+- [x] Explore and implement more WinElement properties
+- [ ] Test remote connection
+	- [ ] Https connection (deferred since having problems with https certificates)
+- [x] Implement session ID to deny connections outside registered session
+- [x] Write javadocs
+
 ## Raising issues and feature requests
 See below for now.
 
 ## Contributing to the project
-Please raise a GitHub issue requesting any features and issues and I'll get to them ASAP. Any code changes and PR's will be reviewed by me (@lennyesquivel) in the foreseeable future until code guidelines and project good practices are in place for anyone else to implement (yes, I know and am fully aware I'm not following best practices but the project needed to be working fast).
+Please raise a GitHub issue requesting any features and issues, and I'll get to them ASAP. Any code changes and PR's will be reviewed by me (@lennyesquivel) in the foreseeable future until code guidelines and project good practices are in place for anyone else to implement (yes, I know and am fully aware I'm not following best practices but the project needed to be working fast).
