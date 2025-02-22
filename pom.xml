@@ -4,7 +4,7 @@
 
   <groupId>xyz.lennyesquivel</groupId>
   <artifactId>WindowsAutomationPlugin-Java</artifactId>
-  <version>0.1.5-alpha</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>WindowsAutomationPlugin-Java</name>
