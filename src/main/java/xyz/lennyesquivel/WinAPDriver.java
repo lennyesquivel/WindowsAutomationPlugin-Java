@@ -326,6 +326,11 @@ public class WinAPDriver {
         }
     }
 
+    /**
+     * Unregister client session from running driver
+     *
+     * @author Lenny Esquivel
+     */
     public void finishClientSession() {
         manager.finishClientSession();
     }
