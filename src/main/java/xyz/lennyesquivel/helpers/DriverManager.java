@@ -134,6 +134,10 @@ public class DriverManager {
         }
     }
 
+    public void finishClientSession() {
+        unRegisterClientSession();
+    }
+
     public boolean checkReadyStatus(int retries) {
         boolean ready = false;
         int retried = 0;

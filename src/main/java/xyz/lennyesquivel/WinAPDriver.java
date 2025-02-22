@@ -326,6 +326,10 @@ public class WinAPDriver {
         }
     }
 
+    public void finishClientSession() {
+        manager.finishClientSession();
+    }
+
     public static ConnectionEngine getConnection() {
         return con;
     }
