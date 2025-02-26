@@ -4,7 +4,7 @@
 
   <groupId>xyz.lennyesquivel</groupId>
   <artifactId>WindowsAutomationPlugin-Java</artifactId>
-  <version>0.1.5-alpha</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>WindowsAutomationPlugin-Java</name>
@@ -35,9 +35,9 @@
 
   <distributionManagement>
     <repository>
-      <id>central</id>
-      <name>Maven Central</name>
-      <url>https://repo1.maven.org/maven2/</url>
+      <id>github</id>
+      <name>GitHub Lenny Esquivel Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/lennyesquivel/WindowsAutomationPlugin-Java</url>
     </repository>
   </distributionManagement>
 
