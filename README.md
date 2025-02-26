@@ -1,5 +1,15 @@
 # WindowsAutomationPlugin
 This is documentation for the WindowsAutomationPlugin client for Java. For Driver documentation please visit the [respective repository](https://github.com/lennyesquivel/WindowsAutomationPlugin-Java/tree/master).
+## Maven dependency
+Add to the ```pom.xml``` file in your project.
+```
+<dependency>
+  <groupId>xyz.lennyesquivel</groupId>
+  <artifactId>windowsautomationplugin-javaclient</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
 ## Download WAP driver
 The WAP java project has an integrated driver manager that checks for an existing version of the driver in the device, if none found, it will attempt to fetch the driver files from the release page on GitHub.
 Installation path for the automatically downloaded driver is "C:\\Users\\YOUR_USER\\.cache\\winapdriver".
