@@ -88,12 +88,12 @@ public class DriverManager {
         File driverDir = new File(userDirectory + "\\.cache\\winapdriver");
         File driverFile = new File(userDirectory + "\\.cache\\winapdriver\\" + driverName);
         if (!cacheDir.exists()) {
-            System.out.println("Driver path doesn't exist, creating directory...");
-            assert cacheDir.mkdir();
-            assert driverDir.mkdir();
+            System.out.println("Cache directory doesn't exist, creating directory...");
+            cacheDir.mkdir();
+            driverDir.mkdir();
         } else if (!driverDir.exists()) {
-            System.out.println("Driver path doesn't exist, creating directory...");
-            assert driverDir.mkdir();
+            System.out.println("Driver directory doesn't exist, creating directory...");
+            driverDir.mkdir();
         } else if (driverFile.exists()) {
             driverPathInUse = driverFile.getAbsolutePath();
             return;
