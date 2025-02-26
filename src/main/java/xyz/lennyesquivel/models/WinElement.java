@@ -27,10 +27,21 @@ public class WinElement {
     public boolean isEnabled;
     public boolean isOffscreen;
 
+    /**
+     * WinElement constructor, no properties set.
+     *
+     * @author Lenny Esquivel
+     */
     public WinElement() {
         con = WinAPDriver.getConnection();
     }
 
+    /**
+     * WinElement constructor receiving WinElement object as String with Json structure
+     *
+     * @param fromJsonString String with WinElement Json structure
+     * @author Lenny Esquivel
+     */
     public WinElement(String fromJsonString) {
         con = WinAPDriver.getConnection();
         ObjectMapper objMapper = new ObjectMapper();
@@ -54,8 +65,9 @@ public class WinElement {
     }
 
     /**
-     * Click on Windows element.
+     * Click on element.
      * driver-attached-action: ClickOnElement
+     *
      * @author Lenny Esquivel
      */
     public void click() {
@@ -64,34 +76,71 @@ public class WinElement {
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
+    /**
+     * Double-click on element.
+     * driver-attached-action: DoubleClickOnElement
+     *
+     * @author Lenny Esquivel
+     */
     public void doubleClick() {
         ActionRequest actionRequest = new ActionRequest(Actions.DoubleClickOnElement, null,
                 byLocator, locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
+    /**
+     * Right click on element.
+     * driver-attached-action: RightClickOnElement
+     *
+     * @author Lenny Esquivel
+     */
     public void rightClick() {
         ActionRequest actionRequest = new ActionRequest(Actions.RightClickOnElement, null,
                 byLocator, locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
+    /**
+     * Right double-click on element.
+     * driver-attached-action: RightDoubleClickOnElement
+     *
+     * @author Lenny Esquivel
+     */
     public void rightDoubleClick() {
         ActionRequest actionRequest = new ActionRequest(Actions.RightDoubleClickOnElement, null,
                 byLocator, locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
+    /**
+     * Element must be of type TextBox. Cast element to TextBox and type value on element.
+     * driver-attached-action: TypeOnTextBox
+     *
+     * @param value String to be typed into element
+     * @author Lenny Esquivel
+     */
     public void type(String value) {
         ActionRequest actionRequest = new ActionRequest(Actions.TypeOnTextBox, value, byLocator, locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
+    /**
+     * Highlight element.
+     * driver-attached-action: Highlight
+     *
+     * @author Lenny Esquivel
+     */
     public void highlight() {
         ActionRequest actionRequest = new ActionRequest(Actions.Highlight, null, byLocator, locatorValue);
         con.post(DriverEndpoints.Action, actionRequest.toJsonString());
     }
 
+    /**
+     * Performs two actions. Presses Ctrl + A, then Backspace.
+     * driver-attached-action: TypeSimultaneously
+     *
+     * @author Lenny Esquivel
+     */
     public void clear() {
         int[] keys = new int[]{VirtualKeyShort.CONTROL, VirtualKeyShort.KEY_A};
         ActionRequest actionRequest = new ActionRequest(Actions.TypeSimultaneously, null, byLocator,
@@ -103,10 +152,22 @@ public class WinElement {
         con.post(DriverEndpoints.Action, actionRequest2.toJsonString());
     }
 
+    /**
+     * Get element Name.
+     *
+     * @return Name
+     * @author Lenny Esquivel
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get element coordinates [X][Y]
+     *
+     * @return Coordinates [X][Y]
+     * @author Lenny Esquivel
+     */
     public int[][] getCoordinates() {
         return new int[][] {{positionX}, {positionY}};
     }

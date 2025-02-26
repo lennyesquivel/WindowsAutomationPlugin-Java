@@ -4,7 +4,7 @@
 
   <groupId>xyz.lennyesquivel</groupId>
   <artifactId>WindowsAutomationPlugin-Java</artifactId>
-  <version>0.1.5-alpha</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>WindowsAutomationPlugin-Java</name>
@@ -22,16 +22,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <version>2.24.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>2.24.3</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
       <artifactId>httpclient5</artifactId>
       <version>5.4.2</version>
@@ -45,9 +35,9 @@
 
   <distributionManagement>
     <repository>
-      <id>central</id>
-      <name>Maven Central</name>
-      <url>https://repo1.maven.org/maven2/</url>
+      <id>github</id>
+      <name>GitHub Lenny Esquivel Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/lennyesquivel/WindowsAutomationPlugin-Java</url>
     </repository>
   </distributionManagement>
 
